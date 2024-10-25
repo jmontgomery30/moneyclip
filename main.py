@@ -10,14 +10,19 @@ app = Flask(__name__)
 
 UPLOAD_FOLDER = 'uploads'
 PROCESSED_FOLDER = 'processed'
+TRAINING_FOLDER = 'training'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['PROCESSED_FOLDER'] = PROCESSED_FOLDER
+app.config['TRAINING_FOLDER'] = TRAINING_FOLDER
 
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
 if not os.path.exists(PROCESSED_FOLDER):
     os.makedirs(PROCESSED_FOLDER)
+
+if not os.path.exists(TRAINING_FOLDER):
+    os.makedirs(TRAINING_FOLDER)
 
 @app.route('/upload', methods=['POST'])
 def upload_video():
@@ -69,6 +74,19 @@ def schedule_video():
     schedule_post(clip_path, platform, schedule_time)
     return jsonify({'message': 'Clip scheduled successfully'}), 200
 
+@app.route('/train', methods=['POST'])
+def train_model():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+    if file:
+        filepath = os.path.join(app.config['TRAINING_FOLDER'], file.filename)
+        file.save(filepath)
+        # Placeholder for model training logic
+        return jsonify({'message': 'File uploaded and model training started', 'filepath': filepath}), 200
+
 def gradio_interface():
     def upload_and_process(file):
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.name)
@@ -93,6 +111,12 @@ def gradio_interface():
         schedule_post(clip_path, platform, schedule_time)
         return "Clip scheduled successfully"
 
+    def upload_and_train(file):
+        filepath = os.path.join(app.config['TRAINING_FOLDER'], file.name)
+        file.save(filepath)
+        # Placeholder for model training logic
+        return "File uploaded and model training started"
+
     with gr.Blocks() as demo:
         with gr.Tab("Upload and Process"):
             upload_file = gr.File(label="Upload Video")
@@ -107,6 +131,12 @@ def gradio_interface():
             schedule_button = gr.Button("Schedule Clip")
             schedule_output = gr.Textbox(label="Schedule Status")
             schedule_button.click(schedule, inputs=[clip_path, platform, schedule_time], outputs=schedule_output)
+
+        with gr.Tab("Train Model"):
+            train_file = gr.File(label="Upload Training Video")
+            train_button = gr.Button("Train Model")
+            train_output = gr.Textbox(label="Training Status")
+            train_button.click(upload_and_train, inputs=train_file, outputs=train_output)
 
     demo.launch()
 
