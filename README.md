@@ -2,7 +2,7 @@
 
 ## Project Description
 
-This project is a local Python version of OpusClip, a tool designed for video creators to repurpose longer videos into short, engaging content for social media platforms like YouTube Shorts, TikTok, and Instagram Reels. The tool offers a range of features including AI Clipping, AI B-Roll, animated captions, social media scheduling, team workspace and collaboration tools, virality score, export and integration options, customization and branding, and aspect ratio adjustments.
+This project is a local Python version of Clipping software, a tool designed for video creators to repurpose longer videos into short, engaging content for social media platforms like YouTube Shorts, TikTok, and Instagram Reels. The tool offers a range of features including AI Clipping, AI B-Roll, animated captions, social media scheduling, team workspace and collaboration tools, virality score, export and integration options, customization and branding, and aspect ratio adjustments.
 
 ### Key Features
 
