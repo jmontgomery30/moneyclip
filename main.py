@@ -1,5 +1,6 @@
-from flask import Flask, request, jsonify
 import os
+from flask import Flask, request, jsonify
+import gradio as gr
 from ai_clipping import analyze_video, create_clips
 from ai_broll import add_broll
 from animated_captions import generate_captions
@@ -68,5 +69,47 @@ def schedule_video():
     schedule_post(clip_path, platform, schedule_time)
     return jsonify({'message': 'Clip scheduled successfully'}), 200
 
+def gradio_interface():
+    def upload_and_process(file):
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.name)
+        file.save(filepath)
+        segments = analyze_video(filepath)
+        clips = create_clips(filepath, segments)
+        processed_clips = []
+        for clip in clips:
+            clip_with_broll = add_broll(clip)
+            clip_with_captions = generate_captions(clip_with_broll)
+            processed_clips.append(clip_with_captions)
+
+        processed_paths = []
+        for i, clip in enumerate(processed_clips):
+            processed_path = os.path.join(app.config['PROCESSED_FOLDER'], f'clip_{i}.mp4')
+            clip.write_videofile(processed_path)
+            processed_paths.append(processed_path)
+
+        return processed_paths
+
+    def schedule(clip_path, platform, schedule_time):
+        schedule_post(clip_path, platform, schedule_time)
+        return "Clip scheduled successfully"
+
+    with gr.Blocks() as demo:
+        with gr.Tab("Upload and Process"):
+            upload_file = gr.File(label="Upload Video")
+            process_button = gr.Button("Process Video")
+            output = gr.Gallery(label="Processed Clips")
+            process_button.click(upload_and_process, inputs=upload_file, outputs=output)
+
+        with gr.Tab("Schedule"):
+            clip_path = gr.Textbox(label="Clip Path")
+            platform = gr.Textbox(label="Platform")
+            schedule_time = gr.Textbox(label="Schedule Time")
+            schedule_button = gr.Button("Schedule Clip")
+            schedule_output = gr.Textbox(label="Schedule Status")
+            schedule_button.click(schedule, inputs=[clip_path, platform, schedule_time], outputs=schedule_output)
+
+    demo.launch()
+
 if __name__ == '__main__':
+    gradio_interface()
     app.run(debug=True)
