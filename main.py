@@ -90,7 +90,8 @@ def train_model():
 def gradio_interface():
     def upload_and_process(file):
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.name)
-        file.save(filepath)
+        with open(filepath, 'wb') as f:
+            f.write(file.read())
         segments = analyze_video(filepath)
         clips = create_clips(filepath, segments)
         processed_clips = []
@@ -113,7 +114,8 @@ def gradio_interface():
 
     def upload_and_train(file):
         filepath = os.path.join(app.config['TRAINING_FOLDER'], file.name)
-        file.save(filepath)
+        with open(filepath, 'wb') as f:
+            f.write(file.read())
         # Placeholder for model training logic
         return "File uploaded and model training started"
 
