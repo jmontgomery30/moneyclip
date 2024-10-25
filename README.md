@@ -33,6 +33,9 @@ pip install -r requirements.txt
 - `scikit-learn`
 - `tensorflow`
 - `flask`
+- `gradio`
+- `emoji`
+- `apscheduler`
 
 ## Usage
 
@@ -54,7 +57,12 @@ To use the tool, follow these steps:
    python main.py
    ```
 
-4. Upload a video through the web interface and process it to create short clips.
+4. Run the Gradio web server:
+   ```bash
+   python main.py
+   ```
+
+5. Upload a video through the web interface and process it to create short clips.
 
 ## Contributing
 
