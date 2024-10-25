@@ -1,0 +1,8 @@
+opencv-python
+moviepy
+pytube
+numpy
+pandas
+scikit-learn
+tensorflow
+flask
